@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         slack-search-result-exporter
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
@@ -19,13 +19,15 @@
  */
 let global = window;
 
-global.SlackSearchResultExporter = global.SlackSearchResultExporter || {};
+global = {
+  SlackSearchResultExporter: {}
+};
 
 /**
  * Gather slack messages in search results. Then gathered messages are shown as a popup window.
  * < This is main method. >
  */
-SlackSearchResultExporter.exportMessage = function () {
+global.SlackSearchResultExporter.exportMessage = function () {
   const messagePack = {
     messages: [],
     hasNexPage: true,
@@ -38,7 +40,7 @@ SlackSearchResultExporter.exportMessage = function () {
  * Gather slack messages in all page of search result.
  * @param messagePack
  */
-SlackSearchResultExporter.getMessage = function (messagePack) {
+global.SlackSearchResultExporter.getMessage = function (messagePack) {
   if (!messagePack.hasNexPage) {
     // If next page doesn't exist, display popup is include gathered messages.
     this.showMessagesPopup(messagePack);
@@ -59,7 +61,7 @@ SlackSearchResultExporter.getMessage = function (messagePack) {
 /**
  * Wait display searched result.
  */
-SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
+global.SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
   const selector = ".c-search_message__body";
   return new Promise((resolve) => {
     const el = document.querySelector(selector);
@@ -85,7 +87,7 @@ SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
 /**
  * Get message
  */
-SlackSearchResultExporter.createPromiseGetMessages = function (messagePack) {
+global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePack) {
   const messageGroupSelector = ".c-message_group";
   const messageContentSelector = ".c-search_message__content";
   const messageTimestampSelector = ".c-timestamp";
@@ -122,7 +124,7 @@ SlackSearchResultExporter.createPromiseGetMessages = function (messagePack) {
 /**
  * Click next element
  */
-SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) {
+global.SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) {
   messagePack.hasNexPage = document.querySelector(".c-search__pager__button_forward") !== null;
   if (!messagePack.hasNexPage) {
     // Return dummy promise.
@@ -139,7 +141,7 @@ SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) 
 /**
  * Wait specified millisecond
  */
-SlackSearchResultExporter.createPromiseWaitMillisecond = function (millisecond) {
+global.SlackSearchResultExporter.createPromiseWaitMillisecond = function (millisecond) {
   return new Promise(resolve => setTimeout(resolve, millisecond));
 }
 
@@ -148,7 +150,7 @@ SlackSearchResultExporter.createPromiseWaitMillisecond = function (millisecond) 
  * @param timestamp
  * @returns {string}
  */
-SlackSearchResultExporter.timestampToTime = function (timestamp) {
+global.SlackSearchResultExporter.timestampToTime = function (timestamp) {
   const d = new Date(timestamp * Math.pow(10, 13 - timestamp.length));
   return d.toLocaleDateString("ja-JP") + " " + d.toLocaleTimeString("ja-JP");
 }
@@ -161,7 +163,7 @@ SlackSearchResultExporter.timestampToTime = function (timestamp) {
  * @param messagePack
  * @returns {boolean}
  */
-SlackSearchResultExporter.showMessagesPopup = function (messagePack) {
+global.SlackSearchResultExporter.showMessagesPopup = function (messagePack) {
   const massageAll = messagePack.messages.join("\n");
   console.log("----------------------");
   console.log("showMessagesPopup : messagePack.messages.length " + messagePack.messages.length);
