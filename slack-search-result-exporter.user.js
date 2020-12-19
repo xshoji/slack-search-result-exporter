@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         slack-search-result-exporter
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.21
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
@@ -19,9 +19,7 @@
  */
 let global = window;
 
-global = {
-  SlackSearchResultExporter: {}
-};
+global.SlackSearchResultExporter = global.SlackSearchResultExporter || {}
 
 /**
  * Gather slack messages in search results. Then gathered messages are shown as a popup window.
