@@ -12,6 +12,8 @@ Exports Slack messages as TSV from Search results.
 
 *1 Please allow the popup.
 
+[](https://github.com/xshoji/slack-search-result-exporter/blob/images/images/demo.gif?raw=true)
+
 ### Use by Greasemonkey
 
 1. Install this script to Greasemonkey.
