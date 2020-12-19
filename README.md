@@ -10,7 +10,7 @@ Exports Slack messages as TSV from Search results.
 1. Paste all slack-search-result-exporter.user.js codes
 1. Execute `SlackSearchResultExporter.exportMessage()` on console
 
-*1 Please allow the popup.
+\* Please allow the popup.
 
 ![](https://github.com/xshoji/slack-search-result-exporter/blob/images/images/demo.gif?raw=true)
 
@@ -22,4 +22,4 @@ Exports Slack messages as TSV from Search results.
 1. Open Chrome console ( Cmd + option + I )
 1. Execute `SlackSearchResultExporter.exportMessage()`
 
-*1 Please allow the popup.
+\* Please allow the popup.
