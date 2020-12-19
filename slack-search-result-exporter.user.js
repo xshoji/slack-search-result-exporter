@@ -7,7 +7,10 @@
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
-// @require      https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.js
+// @require      https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.user.js
+// @updateURL    https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.user.js
+// @downloadURL  https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.user.js
+// @supportURL   https://raw.githubusercontent.com/xshoji/slack-search-result-exporter
 // @grant        none
 // ==/UserScript==
 

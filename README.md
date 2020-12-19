@@ -7,7 +7,7 @@ Exports Slack messages as TSV from Search results.
 1. Open slack.com
 1. Search messages and wait results
 1. Open Chrome console ( Cmd + option + I )
-1. Paste all slack-search-result-exporter.js codes
+1. Paste all slack-search-result-exporter.user.js codes
 1. Execute `SlackSearchResultExporter.exportMessage()` on console
 
 *1 Please allow the popup.
