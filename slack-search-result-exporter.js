@@ -14,7 +14,9 @@
 /**
  * slack-search-result-exporter
  */
-const SlackSearchResultExporter = window.SlackSearchResultExporter = {}
+let global = window;
+
+global.SlackSearchResultExporter = global.SlackSearchResultExporter || {};
 
 /**
  * Gather slack messages in search results. Then gathered messages are shown as a popup window.
