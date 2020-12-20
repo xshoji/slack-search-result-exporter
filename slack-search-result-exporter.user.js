@@ -9,7 +9,7 @@
 // @match        https://app.slack.com/*
 // @updateURL    https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.user.js
 // @downloadURL  https://raw.githubusercontent.com/xshoji/slack-search-result-exporter/main/slack-search-result-exporter.user.js
-// @supportURL   https://raw.githubusercontent.com/xshoji/slack-search-result-exporter
+// @supportURL   https://github.com/xshoji/slack-search-result-exporter
 // @grant        none
 // ==/UserScript==
 
@@ -119,7 +119,7 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
 }
 
 /**
- * Click next element
+ * Click next page link
  */
 global.SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) {
   messagePack.hasNexPage = document.querySelector(".c-search__pager__button_forward") !== null;
