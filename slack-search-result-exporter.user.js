@@ -29,7 +29,7 @@ global.SlackSearchResultExporter.exportMessage = function () {
     messages: [],
     hasNexPage: true,
   };
-  // Gather messages in all pages.
+  // Gather messages in all pages
   this.getMessage(messagePack);
 }
 
@@ -39,12 +39,12 @@ global.SlackSearchResultExporter.exportMessage = function () {
  */
 global.SlackSearchResultExporter.getMessage = function (messagePack) {
   if (!messagePack.hasNexPage) {
-    // If next page doesn't exist, display popup is include gathered messages.
+    // If next page doesn't exist, display popup includes gathered messages
     this.showMessagesPopup(messagePack);
     return;
   }
   (async () => {
-    // Wait searched results and gather these messages.
+    // Wait searched results and gather these messages
     await this.createPromiseWaitSearchResult()
       .then(async () => await this.createPromiseWaitMillisecond(400))
       .then(() => this.createPromiseGetMessages(messagePack))
@@ -68,7 +68,7 @@ global.SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
       // Query for elements matching the specified selector
       Array.from(document.querySelectorAll(selector)).forEach((element) => {
         resolve(element);
-        //Once we have resolved we don't need the observer anymore.
+        //Once we have resolved we don't need the observer anymore
         observer.disconnect();
       });
     })
@@ -123,7 +123,7 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
 global.SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) {
   messagePack.hasNexPage = document.querySelector(".c-search__pager__button_forward") !== null;
   if (!messagePack.hasNexPage) {
-    // Return dummy promise.
+    // Return dummy promise
     return new Promise((resolve) => {
       resolve(messagePack);
     })
