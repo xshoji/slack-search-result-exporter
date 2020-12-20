@@ -156,7 +156,7 @@ global.SlackSearchResultExporter.timestampToTime = function (timestamp) {
   const mi = ("0" + d.getMinutes()).slice(-2);
   const ss = ("0" + d.getSeconds()).slice(-2);
   const week = weekday[d.getDay()];
-  return `${yyyy}-${mm}-${dd}(${week}) ${hh}:${mi}:${ss}`;
+  return `${yyyy}-${mm}-${dd} ${week} ${hh}:${mi}:${ss}`;
 }
 
 /**
