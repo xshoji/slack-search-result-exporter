@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         slack-search-result-exporter
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
@@ -21,10 +21,27 @@ let global = window;
 global.SlackSearchResultExporter = global.SlackSearchResultExporter || {}
 
 /**
+ * Debug mode
+ * @type {boolean}
+ */
+global.SlackSearchResultExporter.isDebug = false
+
+/**
+ * Logging
+ * @param value
+ */
+global.SlackSearchResultExporter.log = function (value) {
+  if (this.isDebug === true) {
+    console.log(value);
+  }
+}
+
+/**
  * Gather slack messages in search results. Then gathered messages are shown as a popup window.
  * < This is main method. >
  */
 global.SlackSearchResultExporter.exportMessage = function () {
+  this.log(">>> exportMessage");
   const messagePack = {
     messages: [],
     hasNexPage: true,
@@ -38,7 +55,9 @@ global.SlackSearchResultExporter.exportMessage = function () {
  * @param messagePack
  */
 global.SlackSearchResultExporter.getMessage = function (messagePack) {
+  this.log(">>> getMessage");
   if (!messagePack.hasNexPage) {
+    this.log("exportMessage::messagePack.hasNexPage = " + messagePack.hasNexPage);
     // If next page doesn't exist, display popup includes gathered messages
     this.showMessagesPopup(messagePack);
     return;
@@ -58,6 +77,7 @@ global.SlackSearchResultExporter.getMessage = function (messagePack) {
  * Wait display searched result.
  */
 global.SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
+  this.log(">>> createPromiseWaitSearchResult");
   const selector = ".c-search_message__content";
   return new Promise((resolve) => {
     const el = document.querySelector(selector);
@@ -84,6 +104,7 @@ global.SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
  * Get message
  */
 global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePack) {
+  this.log(">>> createPromiseGetMessages");
   const messageGroupSelector = ".c-message_group";
   const messageContentSelector = ".c-search_message__content";
   const messageTimestampSelector = ".c-timestamp";
@@ -94,6 +115,7 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
   
   return new Promise((resolve) => {
     let messageGroups = document.querySelectorAll(messageGroupSelector);
+    this.log("createPromiseGetMessages | Promise | messageGroups.length = " + messageGroups.length);
     
     messageGroups.forEach((messageGroup) => {
       const datetime = this.timestampToTime(messageGroup.querySelector(messageTimestampSelector).getAttribute(messageTimestampAttributeKey).split(".")[0]);
@@ -111,6 +133,8 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
       const trimmedMessage = message.replace(removeMessageSender, '').replace(removeTimestampLabel, '');
       // 2020/12/19 20:00:20 <tab> qiita_twitter_bot <tab> twitter <tab> slack message here ... 
       const timeAndMessage = datetime + "\t" + channelName + "\t" + messageSender + "\t" + trimmedMessage;
+      this.log("createPromiseGetMessages | Promise | messageGroups.forEach | " + [datetime, channelName, messageSender, timestampLabel, message].join(", "));
+      this.log("createPromiseGetMessages | Promise | messageGroups.forEach | " + timeAndMessage);
       messagePack.messages.push(timeAndMessage);
     });
     resolve(messagePack);
@@ -121,14 +145,17 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
  * Click next page link
  */
 global.SlackSearchResultExporter.createPromiseClickNextButton = function (messagePack) {
+  this.log(">>> createPromiseClickNextButton");
   messagePack.hasNexPage = document.querySelector(".c-search__pager__button_forward") !== null;
   if (!messagePack.hasNexPage) {
+    this.log("createPromiseClickNextButton | messagePack.hasNexPage = " + messagePack.hasNexPage);
     // Return dummy promise
     return new Promise((resolve) => {
       resolve(messagePack);
     })
   }
   return new Promise((resolve) => {
+    this.log("createPromiseClickNextButton | Promise | click()");
     document.querySelector(".c-search__pager__button_forward").click();
     resolve(messagePack);
   });
@@ -161,12 +188,12 @@ global.SlackSearchResultExporter.timestampToTime = function (timestamp) {
 
 /**
  * Escape regex meta characters
- * > Escape string for use in Javascript regex - Stack Overflow  
+ * > Escape string for use in Javascript regex - Stack Overflow
  * > https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
  * @param stringValue
  * @returns {*}
  */
-global.SlackSearchResultExporter.escapeRegExp = function(stringValue) {
+global.SlackSearchResultExporter.escapeRegExp = function (stringValue) {
   // $& means the whole matched string
   return stringValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -180,11 +207,10 @@ global.SlackSearchResultExporter.escapeRegExp = function(stringValue) {
  * @returns {boolean}
  */
 global.SlackSearchResultExporter.showMessagesPopup = function (messagePack) {
+  this.log(">>> showMessagesPopup");
   const massageAll = messagePack.messages.join("\n");
-  console.log("----------------------");
-  console.log("showMessagesPopup : messagePack.messages.length " + messagePack.messages.length);
-  console.log("showMessagesPopup : massageAll.length " + massageAll.length);
-  console.log("----------------------");
+  this.log("showMessagesPopup | messagePack.messages.length " + messagePack.messages.length);
+  this.log("showMessagesPopup | massageAll.length " + massageAll.length);
   
   const textareaElement = document.createElement("textarea");
   // > html - How to adjust textarea size with javascript? - Stack Overflow  
