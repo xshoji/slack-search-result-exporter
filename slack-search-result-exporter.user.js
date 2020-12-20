@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         slack-search-result-exporter
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
@@ -48,7 +48,6 @@ global.SlackSearchResultExporter.getMessage = function (messagePack) {
     await this.createPromiseWaitSearchResult()
       .then(async () => await this.createPromiseWaitMillisecond(400))
       .then(() => this.createPromiseGetMessages(messagePack))
-      .then(async () => await this.createPromiseWaitMillisecond(400))
       .then(() => this.createPromiseClickNextButton(messagePack))
       .then(async () => await this.createPromiseWaitMillisecond(400))
       .then(() => this.getMessage(messagePack));
@@ -106,7 +105,7 @@ global.SlackSearchResultExporter.createPromiseGetMessages = function (messagePac
       const timestampLabel = messageGroup.querySelector(timestampLabelSelector).textContent
       // twitterAPP 8:00 PMslack message here ... 
       const message = messageGroup.querySelector(messageContentSelector).textContent;
-      const removeMessageSender = new RegExp('^' + messageSender);
+      const removeMessageSender = new RegExp('^' + this.escapeRegExp(messageSender));
       const removeTimestampLabel = new RegExp('^.*?' + timestampLabel);
       // APP 8:00 PMslack message here ... 
       const trimmedMessage = message.replace(removeMessageSender, '').replace(removeTimestampLabel, '');
@@ -149,7 +148,27 @@ global.SlackSearchResultExporter.createPromiseWaitMillisecond = function (millis
  */
 global.SlackSearchResultExporter.timestampToTime = function (timestamp) {
   const d = new Date(timestamp * Math.pow(10, 13 - timestamp.length));
-  return d.toLocaleDateString("ja-JP") + " " + d.toLocaleTimeString("ja-JP");
+  const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const yyyy = d.getFullYear();
+  const mm = ("0" + (d.getMonth() + 1)).slice(-2);
+  const dd = ("0" + d.getDate()).slice(-2);
+  const hh = ("0" + d.getHours()).slice(-2);
+  const mi = ("0" + d.getMinutes()).slice(-2);
+  const ss = ("0" + d.getSeconds()).slice(-2);
+  const week = weekday[d.getDay()];
+  return `${yyyy}-${mm}-${dd}(${week}) ${hh}:${mi}:${ss}`;
+}
+
+/**
+ * Escape regex meta characters
+ * > Escape string for use in Javascript regex - Stack Overflow  
+ * > https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+ * @param stringValue
+ * @returns {*}
+ */
+global.SlackSearchResultExporter.escapeRegExp = function(stringValue) {
+  // $& means the whole matched string
+  return stringValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
