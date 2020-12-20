@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         slack-search-result-exporter
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Exports Slack messages as TSV from Search results.
 // @author       xshoji
 // @match        https://app.slack.com/*
@@ -58,7 +58,7 @@ global.SlackSearchResultExporter.getMessage = function (messagePack) {
  * Wait display searched result.
  */
 global.SlackSearchResultExporter.createPromiseWaitSearchResult = function () {
-  const selector = ".c-search_message__body";
+  const selector = ".c-search_message__content";
   return new Promise((resolve) => {
     const el = document.querySelector(selector);
     if (el) {
