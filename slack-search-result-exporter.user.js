@@ -2,7 +2,7 @@
 
 (() => {
   
-  const enableDebugMode = true
+  const enableDebugMode = false
   
   const log = (value) => {
     if (enableDebugMode === true) {
