@@ -26,7 +26,7 @@
       // Wait searched results and gather these messages
       await createPromiseWaitSearchResult()
       do {
-        await createPromiseWaitMillisecond(1000)
+        await createPromiseWaitMillisecond(600)
         await createPromiseGetMessages(messagePack)
       } while (messagePack.messagePushed === true)
       await createPromiseClickNextButton(messagePack)
@@ -91,7 +91,7 @@
         const message = messageGroup.querySelector(messageContentSelector).textContent;
         const removeMessageSender = new RegExp('^' + escapeRegExp(messageSender));
         const removeTimestampLabel = new RegExp('^.*?' + timestampLabel);
-        // APP 8:00 PMslack message here ... 
+        // APP 8:00 PM slack message here ... 
         const trimmedMessage = message.replace(removeMessageSender, '').replace(removeTimestampLabel, '');
         // 2020/12/19 20:00:20 <tab> qiita_twitter_bot <tab> twitter <tab> slack message here ... 
         const timeAndMessage = datetime + "\t" + channelName + "\t" + messageSender + "\t" + trimmedMessage;
@@ -115,7 +115,14 @@
    */
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
-    messagePack.hasNextPage = document.querySelector(".c-search__pager__button_forward") !== null;
+    const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
+    let nextArrowBtnElement = null
+    arrowBtnElements.forEach((e) => {
+      if (e.getAttribute("aria-label") === "Next page") {
+        nextArrowBtnElement = e;
+      }
+    })
+    messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       // Return dummy promise
@@ -125,7 +132,7 @@
     }
     return new Promise((resolve) => {
       log("createPromiseClickNextButton | Promise | click()");
-      document.querySelector(".c-search__pager__button_forward").click();
+      nextArrowBtnElement.click();
       resolve(messagePack);
     });
   }
