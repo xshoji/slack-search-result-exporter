@@ -2,7 +2,7 @@
 
 (() => {
   
-  const enableDebugMode = false
+  const enableDebugMode = true
   
   const log = (value) => {
     if (enableDebugMode === true) {
@@ -16,8 +16,8 @@
    */
   const getMessage = (messagePack) => {
     log(">>> getMessage");
-    if (!messagePack.hasNexPage) {
-      log("exportMessage::messagePack.hasNexPage = " + messagePack.hasNexPage);
+    if (!messagePack.hasNextPage) {
+      log("exportMessage::messagePack.hasNextPage = " + messagePack.hasNextPage);
       // If next page doesn't exist, display popup includes gathered messages
       showMessagesPopup(messagePack);
       return;
@@ -25,11 +25,13 @@
     (async () => {
       // Wait searched results and gather these messages
       await createPromiseWaitSearchResult()
-        .then(async () => await createPromiseWaitMillisecond(400))
-        .then(() => createPromiseGetMessages(messagePack))
-        .then(() => createPromiseClickNextButton(messagePack))
-        .then(async () => await createPromiseWaitMillisecond(400))
-        .then(() => getMessage(messagePack));
+      do {
+        await createPromiseWaitMillisecond(1000)
+        await createPromiseGetMessages(messagePack)
+      } while (messagePack.messagePushed === true)
+      await createPromiseClickNextButton(messagePack)
+      await createPromiseWaitMillisecond(400)
+      await getMessage(messagePack);
     })();
   }
   
@@ -62,7 +64,7 @@
   /**
    * Get message
    */
-  const createPromiseGetMessages = (messagePack) => {
+  const createPromiseGetMessages = async (messagePack) => {
     log(">>> createPromiseGetMessages");
     const messageGroupSelector = ".c-message_group";
     const messageContentSelector = ".c-search_message__content";
@@ -71,8 +73,9 @@
     const channelNameSelector = ".c-channel_entity__name";
     const messageSenderSelector = ".c-message__sender_button";
     const timestampLabelSelector = ".c-timestamp__label";
-
+    
     return new Promise((resolve) => {
+      messagePack.messagePushed = false;
       let messageGroups = document.querySelectorAll(messageGroupSelector);
       log("createPromiseGetMessages | Promise | messageGroups.length = " + messageGroups.length);
       
@@ -94,8 +97,15 @@
         const timeAndMessage = datetime + "\t" + channelName + "\t" + messageSender + "\t" + trimmedMessage;
         log("createPromiseGetMessages | Promise | messageGroups.forEach | " + [datetime, channelName, messageSender, timestampLabel, message].join(", "));
         log("createPromiseGetMessages | Promise | messageGroups.forEach | " + timeAndMessage);
+        if (messagePack.messageSet.has(timeAndMessage)) {
+          log("createPromiseGetMessages | Promise | messagePack.messageSet.has(timeAndMessage) === true | " + timeAndMessage);
+          return;
+        }
         messagePack.messages.push(timeAndMessage);
-      });
+        messagePack.messagePushed = true;
+        messagePack.messageSet.add(timeAndMessage);
+        messageGroup.scrollIntoView();
+      })
       resolve(messagePack);
     });
   }
@@ -105,9 +115,9 @@
    */
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
-    messagePack.hasNexPage = document.querySelector(".c-search__pager__button_forward") !== null;
-    if (!messagePack.hasNexPage) {
-      log("createPromiseClickNextButton | messagePack.hasNexPage = " + messagePack.hasNexPage);
+    messagePack.hasNextPage = document.querySelector(".c-search__pager__button_forward") !== null;
+    if (!messagePack.hasNextPage) {
+      log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       // Return dummy promise
       return new Promise((resolve) => {
         resolve(messagePack);
@@ -190,7 +200,9 @@
     log(">>> exportMessage");
     const messagePack = {
       messages: [],
-      hasNexPage: true,
+      messageSet: new Set(),
+      messagePushed: false,
+      hasNextPage: true,  // To handle a first loop
     };
     // Gather messages in all pages
     getMessage(messagePack);
