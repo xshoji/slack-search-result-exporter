@@ -117,12 +117,19 @@
     log(">>> createPromiseClickNextButton");
     const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
     let nextArrowBtnElement = null
+    messagePack.hasNextPage = false
+    if (arrowBtnElements.length === 0) {
+      // Return dummy promise
+      return new Promise((resolve) => {
+        resolve(messagePack);
+      })
+    }
     arrowBtnElements.forEach((e) => {
-      if (e.getAttribute("aria-label") === "Next page") {
+      if (["Next page", "次のページ"].includes(e.getAttribute("aria-label"))) {
         nextArrowBtnElement = e;
       }
     })
-    messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
+      messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       // Return dummy promise
@@ -136,6 +143,7 @@
       resolve(messagePack);
     });
   }
+
   
   /**
    * Wait specified millisecond
