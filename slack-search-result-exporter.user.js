@@ -2,13 +2,13 @@
 
 (() => {
   
-  const enableDebugMode = true
+  const enableDebugMode = true;
   
   const log = (value) => {
     if (enableDebugMode === true) {
       console.log(value);
     }
-  }
+  };
   
   /**
    * Gather Slack messages in all page of search result.
@@ -18,22 +18,22 @@
     log(">>> getMessage");
     if (!messagePack.hasNextPage) {
       log("exportMessage::messagePack.hasNextPage = " + messagePack.hasNextPage);
-      // If next page doesn't exist, display popup includes gathered messages
+      /* If next page doesn't exist, display popup includes gathered messages */
       showMessagesPopup(messagePack);
       return;
     }
     (async () => {
-      // Wait searched results and gather these messages
-      await createPromiseWaitSearchResult()
+      /* Wait searched results and gather these messages */
+      await createPromiseWaitSearchResult();
       do {
-        await createPromiseWaitMillisecond(600)
-        await createPromiseGetMessages(messagePack)
-      } while (messagePack.messagePushed === true)
-      await createPromiseClickNextButton(messagePack)
-      await createPromiseWaitMillisecond(400)
+        await createPromiseWaitMillisecond(1200);
+        await createPromiseGetMessages(messagePack);  
+      } while (messagePack.messagePushed === true);
+      await createPromiseClickNextButton(messagePack);
+      await createPromiseWaitMillisecond(800);
       await getMessage(messagePack);
     })();
-  }
+  };
   
   /**
    * Wait display searched result.
@@ -47,19 +47,19 @@
         resolve(el);
       }
       new MutationObserver((mutationRecords, observer) => {
-        // Query for elements matching the specified selector
+        /* Query for elements matching the specified selector */
         Array.from(document.querySelectorAll(selector)).forEach((element) => {
           resolve(element);
-          //Once we have resolved we don't need the observer anymore
+          /* Once we have resolved we don't need the observer anymore */
           observer.disconnect();
         });
       })
         .observe(document.documentElement, {
           childList: true,
           subtree: true
-        })
+        });
     });
-  }
+  };
   
   /**
    * Get message
@@ -81,19 +81,19 @@
       
       messageGroups.forEach((messageGroup) => {
         const datetime = timestampToTime(messageGroup.querySelector(messageTimestampSelector).getAttribute(messageTimestampAttributeKey).split(".")[0]);
-        // qiita_twitter_bot
-        const channelName = messageGroup.querySelector(channelNameSelector).textContent
-        // twitter
-        const messageSender = messageGroup.querySelector(messageSenderSelector).textContent
-        // 8:00 PM
-        const timestampLabel = messageGroup.querySelector(timestampLabelSelector).textContent
-        // twitterAPP 8:00 PM slack message here ... 
+        /* qiita_twitter_bot */
+        const channelName = messageGroup.querySelector(channelNameSelector).textContent;
+        /* twitter */
+        const messageSender = messageGroup.querySelector(messageSenderSelector).textContent;
+        /* 8:00 PM */
+        const timestampLabel = messageGroup.querySelector(timestampLabelSelector).textContent;
+        /* twitterAPP 8:00 PM slack message here ...  */
         const message = messageGroup.querySelector(messageContentSelector).textContent;
         const removeMessageSender = new RegExp('^' + escapeRegExp(messageSender));
         const removeTimestampLabel = new RegExp('^.*?' + timestampLabel);
-        // APP 8:00 PM slack message here ... 
+        /* APP 8:00 PM slack message here ...  */
         const trimmedMessage = message.replace(removeMessageSender, '').replace(removeTimestampLabel, '');
-        // 2020/12/19 20:00:20 <tab> qiita_twitter_bot <tab> twitter <tab> slack message here ... 
+        /* 2020/12/19 20:00:20 <tab> qiita_twitter_bot <tab> twitter <tab> slack message here ...  */
         const timeAndMessage = datetime + "\t" + channelName + "\t" + messageSender + "\t" + trimmedMessage;
         log("createPromiseGetMessages | Promise | messageGroups.forEach | " + [datetime, channelName, messageSender, timestampLabel, message].join(", "));
         log("createPromiseGetMessages | Promise | messageGroups.forEach | " + timeAndMessage);
@@ -108,7 +108,7 @@
       })
       resolve(messagePack);
     });
-  }
+  };
   
   /**
    * Click next page link
@@ -116,7 +116,7 @@
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
     const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
-    let nextArrowBtnElement = null
+    let nextArrowBtnElement = null;
     arrowBtnElements.forEach((e) => {
       if (e.getAttribute("aria-label") === "Next page") {
         nextArrowBtnElement = e;
@@ -125,7 +125,7 @@
     messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
-      // Return dummy promise
+      /* Return dummy promise */
       return new Promise((resolve) => {
         resolve(messagePack);
       })
@@ -135,14 +135,14 @@
       nextArrowBtnElement.click();
       resolve(messagePack);
     });
-  }
+  };
   
   /**
    * Wait specified millisecond
    */
   const createPromiseWaitMillisecond = (millisecond) => {
     return new Promise(resolve => setTimeout(resolve, millisecond));
-  }
+  };
   
   /**
    * timestamp to datetame
@@ -160,7 +160,7 @@
     const ss = ("0" + d.getSeconds()).slice(-2);
     const week = weekday[d.getDay()];
     return `${yyyy}-${mm}-${dd} ${week} ${hh}:${mi}:${ss}`;
-  }
+  };
   
   /**
    * Escape regex meta characters
@@ -170,9 +170,9 @@
    * @returns {*}
    */
   const escapeRegExp = (stringValue) => {
-    // $& means the whole matched string
+    /* $& means the whole matched string */
     return stringValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
+  };
   
   /**
    * Display messages as a popup window.
@@ -189,19 +189,19 @@
     log("showMessagesPopup | massageAll.length " + massageAll.length);
     
     const textareaElement = document.createElement("textarea");
-    // > html - How to adjust textarea size with javascript? - Stack Overflow  
-    // > https://stackoverflow.com/questions/31734233/how-to-adjust-textarea-size-with-javascript
+    /* html - How to adjust textarea size with javascript? - Stack Overflow */ 
+    /* https://stackoverflow.com/questions/31734233/how-to-adjust-textarea-size-with-javascript */
     textareaElement.rows = 10;
     textareaElement.cols = 50;
     textareaElement.textContent = massageAll;
     
-    // > Open window in JavaScript with HTML inserted - Stack Overflow  
-    // > https://stackoverflow.com/questions/2109205/open-window-in-javascript-with-html-inserted
+    /* Open window in JavaScript with HTML inserted - Stack Overflow */
+    /* https://stackoverflow.com/questions/2109205/open-window-in-javascript-with-html-inserted */
     const win = window.open("", "Slack messages", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300,top=" + (screen.height - 200) + ",left=" + (screen.width - 200));
     win.document.body.appendChild(textareaElement);
     
     return true;
-  }
+  };
   
   const exportMessage = () => {
     log(">>> exportMessage");
@@ -211,12 +211,10 @@
       messagePushed: false,
       hasNextPage: true,  // To handle a first loop
     };
-    // Gather messages in all pages
+    /* Gather messages in all pages */
     getMessage(messagePack);
-  }
+  };
   
-  // Run
-  exportMessage()
-})()
-
-
+  /* Run */
+  exportMessage();
+})();
