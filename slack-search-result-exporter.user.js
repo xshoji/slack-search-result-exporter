@@ -116,26 +116,26 @@
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
     const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
-    let nextArrowBtnElement = null
-    messagePack.hasNextPage = false
+    let nextArrowBtnElement = null;
+    messagePack.hasNextPage = false;
     if (arrowBtnElements.length === 0) {
-      // Return dummy promise
+      /* Return dummy promise */
       return new Promise((resolve) => {
         resolve(messagePack);
-      })
+      });
     }
     arrowBtnElements.forEach((e) => {
       if (["Next page", "次のページ"].includes(e.getAttribute("aria-label"))) {
         nextArrowBtnElement = e;
       }
-    })
+    });
       messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       /* Return dummy promise */
       return new Promise((resolve) => {
         resolve(messagePack);
-      })
+      });
     }
     return new Promise((resolve) => {
       log("createPromiseClickNextButton | Promise | click()");
