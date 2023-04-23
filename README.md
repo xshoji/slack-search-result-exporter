@@ -12,3 +12,7 @@ Exports Slack messages as TSV from Search results.
 \* Please allow the popup.
 
 ![](https://github.com/xshoji/slack-search-result-exporter/blob/images/images/demo.gif?raw=true)
+
+# Recommended usage
+
+This script can be used as bookmarklet just as it is.

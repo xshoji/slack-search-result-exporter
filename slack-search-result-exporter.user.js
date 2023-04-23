@@ -26,11 +26,11 @@
       /* Wait searched results and gather these messages */
       await createPromiseWaitSearchResult();
       do {
-        await createPromiseWaitMillisecond(1200);
+        await createPromiseWaitMillisecond(800);
         await createPromiseGetMessages(messagePack);  
       } while (messagePack.messagePushed === true);
       await createPromiseClickNextButton(messagePack);
-      await createPromiseWaitMillisecond(800);
+      await createPromiseWaitMillisecond(600);
       await getMessage(messagePack);
     })();
   };
@@ -105,7 +105,7 @@
         messagePack.messagePushed = true;
         messagePack.messageSet.add(timeAndMessage);
         messageGroup.scrollIntoView();
-      })
+      });
       resolve(messagePack);
     });
   };
@@ -121,7 +121,7 @@
       if (e.getAttribute("aria-label") === "Next page") {
         nextArrowBtnElement = e;
       }
-    })
+    });
     messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
@@ -209,7 +209,7 @@
       messages: [],
       messageSet: new Set(),
       messagePushed: false,
-      hasNextPage: true,  // To handle a first loop
+      hasNextPage: true,  /* To handle a first loop */
     };
     /* Gather messages in all pages */
     getMessage(messagePack);
