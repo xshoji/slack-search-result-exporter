@@ -129,7 +129,13 @@
         nextArrowBtnElement = e;
       }
     });
-      messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
+    if (!nextArrowBtnElement) {
+      log("createPromiseClickNextButton | Next page button not found.");
+      return new Promise((resolve) => {
+        resolve(messagePack);
+      });
+    }
+    messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       /* Return dummy promise */
