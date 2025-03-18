@@ -31,6 +31,7 @@
       } while (messagePack.messagePushed === true);
       await createPromiseClickNextButton(messagePack);
       await createPromiseWaitMillisecond(600);
+      await createPromiseCheckOutOfPageLimit(messagePack);
       await getMessage(messagePack);
     })();
   };
@@ -41,18 +42,47 @@
   const createPromiseWaitSearchResult = () => {
     log(">>> createPromiseWaitSearchResult");
     const selector = ".c-search_message__content";
-    return new Promise((resolve) => {
+    const messageGroupSelector = ".c-message_group";
+    const messageTimestampSelector = ".c-timestamp";
+    const messageTimestampAttributeKey = "data-ts";
+    
+    const observeFunc = () => {
+      
+      let messageGroups = document.querySelectorAll(messageGroupSelector);
+      let completed = true;
+      messageGroups.forEach((messageGroup) => {
+        let timestampElm = messageGroup.querySelector(messageTimestampSelector);
+        if (!timestampElm) {
+          completed = false;
+          return;
+        }
+        let timestampAttributeValue = timestampElm.getAttribute(messageTimestampAttributeKey);
+        if (!timestampAttributeValue) {
+          completed = false;
+        }
+      })
+
       const el = document.querySelector(selector);
-      if (el) {
-        resolve(el);
+      if (el && completed) {
+        return el;
       }
+      return null;
+    }
+    
+    return new Promise((resolve) => {
+      
+      let observedElement = observeFunc()
+      if (observedElement !== null) {
+        resolve(observedElement);
+      }
+      
       new MutationObserver((mutationRecords, observer) => {
-        /* Query for elements matching the specified selector */
-        Array.from(document.querySelectorAll(selector)).forEach((element) => {
-          resolve(element);
+        let observedElement = observeFunc()
+        if (observedElement !== null) {
+          resolve(observedElement);
           /* Once we have resolved we don't need the observer anymore */
           observer.disconnect();
-        });
+        }
       })
         .observe(document.documentElement, {
           childList: true,
@@ -115,6 +145,7 @@
    */
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
+    
     const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
     let nextArrowBtnElement = null;
     messagePack.hasNextPage = false;
@@ -149,6 +180,22 @@
       resolve(messagePack);
     });
   };
+  
+  /**
+   * Check if the next page is out of the page limit
+   */
+  const createPromiseCheckOutOfPageLimit = (messagePack) => {
+    log(">>> createPromiseCheckOutOfPageLimit");
+    const selector = ".c-search_message__content";
+    let el = document.querySelector(selector);
+    if (el === null) {
+      messagePack.hasNextPage = false;
+    }
+    return new Promise((resolve) => {
+      resolve(messagePack);
+    });
+  };
+  
   
   /**
    * Wait specified millisecond
