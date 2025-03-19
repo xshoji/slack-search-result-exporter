@@ -60,24 +60,24 @@
         if (!timestampAttributeValue) {
           completed = false;
         }
-      })
+      });
 
       const el = document.querySelector(selector);
       if (el && completed) {
         return el;
       }
       return null;
-    }
+    };
     
     return new Promise((resolve) => {
       
-      let observedElement = observeFunc()
+      let observedElement = observeFunc();
       if (observedElement !== null) {
         resolve(observedElement);
       }
       
       new MutationObserver((mutationRecords, observer) => {
-        let observedElement = observeFunc()
+        let observedElement = observeFunc();
         if (observedElement !== null) {
           resolve(observedElement);
           /* Once we have resolved we don't need the observer anymore */
