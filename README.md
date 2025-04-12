@@ -18,4 +18,5 @@ Exports Slack messages as TSV from Search results.
 
 \* Please allow the popup.
 
-![](https://github.com/xshoji/slack-search-result-exporter/blob/images/images/demo.gif?raw=true)
+<div><video controls src="https://github.com/xshoji/slack-search-result-exporter/raw/refs/heads/images/images/demo.mp4" muted="false"></video></div>
+
