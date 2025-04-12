@@ -166,7 +166,7 @@
         resolve(messagePack);
       });
     }
-    messagePack.hasNextPage = !nextArrowBtnElement.outerHTML.includes("disabled");
+    messagePack.hasNextPage = nextArrowBtnElement.attributes["aria-disabled"].value === 'false';
     if (!messagePack.hasNextPage) {
       log("createPromiseClickNextButton | messagePack.hasNextPage = " + messagePack.hasNextPage);
       /* Return dummy promise */
