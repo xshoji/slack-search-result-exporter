@@ -20,6 +20,7 @@ Exports Slack messages as TSV from Search results.
 
 [ages/demo.mp4](https://github.com/user-attachments/assets/95238129-c958-40c7-8fb0-63a151d1d45b)
 
+<video src="https://github.com/user-attachments/assets/95238129-c958-40c7-8fb0-63a151d1d45b" controls loop autoplay muted></video>
 
 
 
