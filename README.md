@@ -2,6 +2,9 @@
 
 Exports Slack messages as TSV from Search results.
 
+[ages/demo.mp4](https://github.com/user-attachments/assets/95238129-c958-40c7-8fb0-63a151d1d45b)
+
+
 # How to use
 
 * Register bookmarklet
@@ -17,7 +20,3 @@ Exports Slack messages as TSV from Search results.
   1. Click bookmarklet
 
 \* Please allow the popup.
-
-[ages/demo.mp4](https://github.com/user-attachments/assets/95238129-c958-40c7-8fb0-63a151d1d45b)
-
-
