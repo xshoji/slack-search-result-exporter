@@ -112,7 +112,9 @@
       messageGroups.forEach((messageGroup) => {
         const datetime = timestampToTime(messageGroup.querySelector(messageTimestampSelector).getAttribute(messageTimestampAttributeKey).split(".")[0]);
         /* qiita_twitter_bot */
-        const channelName = messageGroup.querySelector(channelNameSelector).textContent;
+        const channelNameDom = messageGroup.querySelector(channelNameSelector);
+        let channelName =
+          channelNameDom == null ? "DirectMessage" : channelNameDom.textContent;
         /* twitter */
         const messageSender = messageGroup.querySelector(messageSenderSelector).textContent;
         /* 8:00 PM */
