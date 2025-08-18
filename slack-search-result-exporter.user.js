@@ -1,15 +1,15 @@
 "use strict";
 
 (() => {
-  
+
   const enableDebugMode = true;
-  
+
   const log = (value) => {
     if (enableDebugMode === true) {
       console.log(value);
     }
   };
-  
+
   /**
    * Gather Slack messages in all page of search result.
    * @param messagePack
@@ -27,7 +27,7 @@
       await createPromiseWaitSearchResult();
       do {
         await createPromiseWaitMillisecond(800);
-        await createPromiseGetMessages(messagePack);  
+        await createPromiseGetMessages(messagePack);
       } while (messagePack.messagePushed === true);
       await createPromiseClickNextButton(messagePack);
       await createPromiseWaitMillisecond(600);
@@ -35,7 +35,7 @@
       await getMessage(messagePack);
     })();
   };
-  
+
   /**
    * Wait display searched result.
    */
@@ -45,9 +45,9 @@
     const messageGroupSelector = ".c-message_group";
     const messageTimestampSelector = ".c-timestamp";
     const messageTimestampAttributeKey = "data-ts";
-    
+
     const observeFunc = () => {
-      
+
       let messageGroups = document.querySelectorAll(messageGroupSelector);
       let completed = true;
       messageGroups.forEach((messageGroup) => {
@@ -68,14 +68,14 @@
       }
       return null;
     };
-    
+
     return new Promise((resolve) => {
-      
+
       let observedElement = observeFunc();
       if (observedElement !== null) {
         resolve(observedElement);
       }
-      
+
       new MutationObserver((mutationRecords, observer) => {
         let observedElement = observeFunc();
         if (observedElement !== null) {
@@ -90,29 +90,31 @@
         });
     });
   };
-  
+
   /**
    * Get message
    */
   const createPromiseGetMessages = async (messagePack) => {
     log(">>> createPromiseGetMessages");
-    const messageGroupSelector = ".c-message_group";
+    const messageGroupSelector = '[role="document"]';
     const messageContentSelector = ".c-search_message__content";
     const messageTimestampSelector = ".c-timestamp";
     const messageTimestampAttributeKey = "data-ts";
-    const channelNameSelector = ".c-message_group__header";
+    const channelNameSelector = '[data-qa="inline_channel_entity__name"]';
     const messageSenderSelector = ".c-message__sender_button";
     const timestampLabelSelector = ".c-timestamp__label";
-    
+
     return new Promise((resolve) => {
       messagePack.messagePushed = false;
       let messageGroups = document.querySelectorAll(messageGroupSelector);
       log("createPromiseGetMessages | Promise | messageGroups.length = " + messageGroups.length);
-      
+
       messageGroups.forEach((messageGroup) => {
         const datetime = timestampToTime(messageGroup.querySelector(messageTimestampSelector).getAttribute(messageTimestampAttributeKey).split(".")[0]);
         /* qiita_twitter_bot */
-        const channelName = messageGroup.querySelector(channelNameSelector).textContent;
+        const channelNameDom = messageGroup.querySelector(channelNameSelector);
+        let channelName =
+          channelNameDom == null ? "DirectMessage" : channelNameDom.textContent;
         /* twitter */
         const messageSender = messageGroup.querySelector(messageSenderSelector).textContent;
         /* 8:00 PM */
@@ -139,13 +141,13 @@
       resolve(messagePack);
     });
   };
-  
+
   /**
    * Click next page link
    */
   const createPromiseClickNextButton = (messagePack) => {
     log(">>> createPromiseClickNextButton");
-    
+
     const arrowBtnElements = document.querySelectorAll(".c-pagination__arrow_btn");
     let nextArrowBtnElement = null;
     messagePack.hasNextPage = false;
@@ -180,7 +182,7 @@
       resolve(messagePack);
     });
   };
-  
+
   /**
    * Check if the next page is out of the page limit
    */
@@ -195,15 +197,15 @@
       resolve(messagePack);
     });
   };
-  
-  
+
+
   /**
    * Wait specified millisecond
    */
   const createPromiseWaitMillisecond = (millisecond) => {
     return new Promise(resolve => setTimeout(resolve, millisecond));
   };
-  
+
   /**
    * timestamp to datetame
    * @param timestamp
@@ -221,7 +223,7 @@
     const week = weekday[d.getDay()];
     return `${yyyy}-${mm}-${dd} ${week} ${hh}:${mi}:${ss}`;
   };
-  
+
   /**
    * Escape regex meta characters
    * > Escape string for use in Javascript regex - Stack Overflow
@@ -233,7 +235,7 @@
     /* $& means the whole matched string */
     return stringValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   };
-  
+
   /**
    * Display messages as a popup window.
    * [!] It seems like large text content cannot be copied automatically by js. So this script made user copies gathered messages by oneself.
@@ -247,22 +249,22 @@
     const massageAll = messagePack.messages.join("\n");
     log("showMessagesPopup | messagePack.messages.length " + messagePack.messages.length);
     log("showMessagesPopup | massageAll.length " + massageAll.length);
-    
+
     const textareaElement = document.createElement("textarea");
-    /* html - How to adjust textarea size with javascript? - Stack Overflow */ 
+    /* html - How to adjust textarea size with javascript? - Stack Overflow */
     /* https://stackoverflow.com/questions/31734233/how-to-adjust-textarea-size-with-javascript */
     textareaElement.rows = 10;
     textareaElement.cols = 50;
     textareaElement.textContent = massageAll;
-    
+
     /* Open window in JavaScript with HTML inserted - Stack Overflow */
     /* https://stackoverflow.com/questions/2109205/open-window-in-javascript-with-html-inserted */
     const win = window.open("", "Slack messages", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300,top=" + (screen.height - 200) + ",left=" + (screen.width - 200));
     win.document.body.appendChild(textareaElement);
-    
+
     return true;
   };
-  
+
   const exportMessage = () => {
     log(">>> exportMessage");
     const messagePack = {
@@ -274,7 +276,7 @@
     /* Gather messages in all pages */
     getMessage(messagePack);
   };
-  
+
   /* Run */
   exportMessage();
 })();
