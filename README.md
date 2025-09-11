@@ -20,3 +20,16 @@ Exports Slack messages as TSV from Search results.
   1. Click bookmarklet
 
 \* Please allow the popup.
+
+# Tips for Searching in Slack
+
+```
+# Search for messages containing my name between 2025/01/01 and 2025/01/31
+xshoji -from:me after:2024-12-31 before:2025-02-01
+
+# Search for messages from myself between 2025/01/01 and 2025/01/31
+from:me after:2024-12-31 before:2025-02-01
+
+# Search for messages from @example to me (excluding DMs)
+from:@example xshoji -is:dm
+```
